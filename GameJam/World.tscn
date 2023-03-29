@@ -4,7 +4,6 @@
 
 [node name="World" type="Node"]
 
-[node name="Icon" type="Sprite" parent="."]
-position = Vector2( 402.5, 274 )
-scale = Vector2( 2.14063, 2.09375 )
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 66, 81 )
 texture = ExtResource( 1 )
