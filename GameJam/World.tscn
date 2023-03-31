@@ -10,10 +10,12 @@ position = Vector2( 129, 92 )
 scale = Vector2( 3.86667, 3.55932 )
 texture = ExtResource( 2 )
 
-[node name="Player" parent="." instance=ExtResource( 1 )]
-position = Vector2( 96, 66 )
-
 [node name="Wall" type="StaticBody2D" parent="."]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Wall"]
 polygon = PoolVector2Array( 2, 0, 256, 9, 263, 76, 226, 77, 224, 36, 26, 33, 27, 153, 232, 159, 235, 131, 265, 137, 265, 189, -4, 187 )
+
+[node name="YSort" type="YSort" parent="."]
+
+[node name="Player" parent="YSort" instance=ExtResource( 1 )]
+position = Vector2( 88, 80 )

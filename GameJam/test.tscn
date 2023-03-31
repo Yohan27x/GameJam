@@ -1,0 +1,65 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://World/mockup.png" type="Texture" id=1]
+[ext_resource path="res://test.gd" type="Script" id=2]
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 2.1102
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 7.99998
+
+[node name="Node2D" type="Node2D"]
+rotation = -0.0192364
+script = ExtResource( 2 )
+
+[node name="Sprite2" type="Sprite" parent="."]
+position = Vector2( 424.742, 178.469 )
+rotation = 3.14159
+scale = Vector2( 3.79112, 3.79661 )
+texture = ExtResource( 1 )
+offset = Vector2( 13.3881, 15.1342 )
+
+[node name="Area2D" type="Area2D" parent="Sprite2"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2/Area2D"]
+position = Vector2( 13.4029, 17.7147 )
+shape = SubResource( 2 )
+
+[node name="Sprite5" type="Sprite" parent="."]
+position = Vector2( 304.865, 373.936 )
+rotation = 4.7122
+scale = Vector2( 3.79112, 3.79661 )
+texture = ExtResource( 1 )
+offset = Vector2( 13.3881, 15.1342 )
+
+[node name="Area2D" type="Area2D" parent="Sprite5"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite5/Area2D"]
+position = Vector2( 12.3726, 14.9925 )
+shape = SubResource( 2 )
+
+[node name="Sprite3" type="Sprite" parent="."]
+position = Vector2( 126.13, 98.4423 )
+scale = Vector2( 3.79112, 3.79661 )
+texture = ExtResource( 1 )
+offset = Vector2( -0.0554962, -0.473724 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 109.979, 106.135 )
+current = true
+
+[node name="Area2D" type="Area2D" parent="Camera2D"]
+position = Vector2( 7.62939e-06, -7.62939e-06 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera2D/Area2D"]
+shape = SubResource( 1 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+autostart = true
+
+[connection signal="area_entered" from="Sprite2/Area2D" to="." method="_on_Area2D_area_entered"]
+[connection signal="area_entered" from="Sprite5/Area2D" to="." method="_on_Area2D_area_entered"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
