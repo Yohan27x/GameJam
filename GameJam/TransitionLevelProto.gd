@@ -11,8 +11,8 @@ func _process(delta):
 	
 	if(level_finish == true):
 		var new_camera_pos = camera_pos[camera_pos_index]
-		camera.position = lerp(camera.position, new_camera_pos, 0.02)
-		camera.zoom = lerp(camera.zoom, Vector2(3,3), 0.1)
+		camera.position = lerp(camera.position, new_camera_pos, 0.04)
+		camera.zoom = lerp(camera.zoom, Vector2(2.2,2.2), 0.1)
 
 	if(level_finish == false):
 		camera.zoom = lerp(camera.zoom, Vector2(1,1), 0.1)
