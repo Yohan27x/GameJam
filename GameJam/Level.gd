@@ -8,6 +8,13 @@ onready var colorRect = $Fade
 onready var FadeTimer = $Fadeduration
 onready var UI = $TimeUI
 
+#Sound
+onready var timerEasy = $TimerEasy
+onready var timerMiddle = $TimerMiddle
+onready var timerHard = $TimerHard
+var play_middle_timer = false
+var play_hard_timer = false
+
 const DamageItem = preload("res://Assets/DamageItem.tscn")
 
 var LevelInfo = ResourceLoader.LevelInfo
@@ -35,11 +42,13 @@ func _ready():
 	enemies_reference.pop_back()
 	enemy_index_to_choose = 0
 	#var enemy_index_to_choose = randi() % LevelInfo.enemies_left_in_level
-	print(LevelInfo.enemies_left_in_level)
+#	print(LevelInfo.enemies_left_in_level)
 	var target_enemy = enemies_reference[enemy_index_to_choose]
 	target_enemy.is_target = true
-	print("target_enemy : " + target_enemy.name)
+#	print("target_enemy : " + target_enemy.name)
 	Utils.instanceSceneOnNode(target_enemy,Target,target_enemy.global_position)
+	
+	_play_easy_timer()
 	
 
 func _process(delta):
@@ -64,6 +73,27 @@ func _process(delta):
 			FadeTimer.start()
 			start_level_reach_timer = true
 			
+	# SOUND 
+	
+	if(5 <= LevelInfo.timer_in_level - UI.timer.time_left and LevelInfo.timer_in_level - UI.timer.time_left  < 8):
+		play_middle_timer = true
+	else:
+		play_middle_timer = false
+		
+	if(8 <=  LevelInfo.timer_in_level - UI.timer.time_left and LevelInfo.timer_in_level - UI.timer.time_left < LevelInfo.timer_in_level):
+		play_hard_timer = true
+	else:
+		play_hard_timer = false
+	
+	if(play_middle_timer):
+		_play_middle_timer()
+		
+	if(play_hard_timer):
+		_play_hard_timer()
+			
+
+	
+
 
 func _on_ChangeLevel_body_entered(body):
 	if(LevelInfo.enemies_left_in_level == 0):
@@ -80,40 +110,30 @@ func _on_Timer_timeout():
 		$GameOver.visible = true
 
 
-func _on_Enemy1_tree_exited():
-	pass
-#	print("enemy1 exited tree")
-#	enemies_reference = $YSort.get_children()
-#	if(LevelInfo.enemies_left_in_level != 0):
-#		var enemy_index_to_choose = randi() % LevelInfo.enemies_left_in_level
-#		var target_enemy = enemies_reference[enemy_index_to_choose]
-#		target_enemy.is_target = true
-#		Utils.instanceSceneOnNode(target_enemy,Target,target_enemy.global_position)
-
-
-func _on_Enemy2_tree_exited():
-	pass
-#	print("enemy2 exited tree")
-#	enemies_reference = $YSort.get_children()
-#	if(LevelInfo.enemies_left_in_level != 0):
-#		var enemy_index_to_choose = randi() % LevelInfo.enemies_left_in_level
-#		var target_enemy = enemies_reference[enemy_index_to_choose]
-#		target_enemy.is_target = true
-#		Utils.instanceSceneOnNode(target_enemy,Target, target_enemy.global_position)
-	
-
 func _on_YSort_child_exiting_tree(exit_node):
 	if(exit_node.name.begins_with("Enemy") == true):
 		if(LevelInfo.enemies_left_in_level != 0 and LevelInfo.level_finish == false):
 			enemies_reference = $YSort.get_children()
-			print(enemies_reference)
+#			print(enemies_reference)
 			var target_enemy = enemies_reference[enemy_index_to_choose +1]
 			if(target_enemy.name.begins_with("Enemy")):
 				target_enemy.is_target = true
 				Utils.instanceSceneOnNode(target_enemy,Target, target_enemy.global_position)
-	#		var enemy_index_to_choose = randi() % LevelInfo.enemies_left_in_level
-	#		var target_enemy = enemies_reference[enemy_index_to_choose]
-	#		if(target_enemy.name.begins_with("Enemy")):
-	#			print("next target :" + target_enemy.name)
-	#			target_enemy.is_target = true
-	#			Utils.instanceSceneOnNode(target_enemy,Target, target_enemy.global_position)
+		
+func _play_easy_timer():
+	timerEasy.playing = true
+	timerMiddle.playing = false
+	timerHard.playing = false
+	
+		
+func _play_middle_timer():
+	timerEasy.playing = false
+	timerMiddle.playing = true
+	timerHard.playing = false
+	play_middle_timer = false
+	
+func _play_hard_timer():
+	timerEasy.playing = false
+	timerMiddle.playing = false
+	timerHard.playing = true
+	play_hard_timer = false
