@@ -6,13 +6,15 @@ var current_level = 0
 var max_level = 1
 var level_finish = false
 
-var levels_enemies_data = [3,2]
+var levels_enemies_data = [2,4]
 var levels_timer_data = [1000,20]
 
 var timer_in_level
 var enemies_in_level
 var enemies_left_in_level
 
+
+	
 
 func go_to_next_level():
 	if(current_level < max_level):

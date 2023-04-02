@@ -5,7 +5,7 @@
 [ext_resource path="res://Assets/DamageItem.gd" type="Script" id=3]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 3.53553
+radius = 4.52769
 
 [node name="DamageItem" instance=ExtResource( 2 )]
 script = ExtResource( 3 )

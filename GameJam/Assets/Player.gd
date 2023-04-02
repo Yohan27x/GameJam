@@ -1,9 +1,10 @@
 extends KinematicBody2D
 
 
-export var ACCELERATION = 500
-export var SPEED = 150
-export var FRICTION = 1000
+export var ACCELERATION = 40
+export var MAX_SPEED = 100
+export var ROLL_SPEED = 120
+export var FRICTION = 12
 
 
 var input_vector = Vector2.ZERO
@@ -12,42 +13,70 @@ var LevelInfo = ResourceLoader.LevelInfo
 var stats = ResourceLoader.PlayerStats
 
 
-onready var Animationtree = $AnimationTree
+onready var animationTree = $AnimationTree
+onready var animationState = animationTree.get("parameters/playback")
 
-func _ready():
-	pass
-	
-func _process(delta):
-	pass
-	 
-#	print($HitBox.damage)
+enum {
+	MOVE,
+	ROLL,
+	ATTACK,
+}
 
+var state = MOVE
+var velocity = Vector2.ZERO
+var roll_vector = Vector2.DOWN
+
+
+func _physics_process(delta): # physics process if need to touch positon or whatever of the player
+
+	match state:
+		MOVE:
+			moves_state(delta)
+#		ROLL:
+#			roll_state(delta)
+#		ATTACK:
+#			attack_state(delta)
 	
-func _physics_process(delta):
-	
-	var velocity = Vector2.ZERO
+
+func moves_state(delta):
 	
 	if(LevelInfo.level_finish == false):
 	
-		if(Input.is_action_pressed("ui_right")):
-			velocity.x += 1.0
-		if(Input.is_action_pressed("ui_left")):
-			velocity.x -= 1.0
-		if(Input.is_action_pressed("ui_up")):
-			velocity.y -= 1.0
-		if(Input.is_action_pressed("ui_down")):
-			velocity.y += 1.0
+		var dt = delta * 60
+
+		var input_vector = Vector2.ZERO
+		input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
+		input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+
+		input_vector = input_vector.normalized()
+
+		if (input_vector != Vector2.ZERO):
+	#		roll_vector = input_vector
+			animationTree.set("parameters/Idle/blend_position", input_vector)
+			animationTree.set("parameters/Run/blend_position", input_vector)
+			animationTree.set("parameters/Attack/blend_position", input_vector)
+			animationTree.set("parameters/Roll/blend_position", input_vector)
+			animationState.travel("Run")
 			
-		velocity = velocity.normalized()
-		
-		velocity = move_and_slide(velocity * SPEED)
-		
-		if velocity == Vector2.ZERO:
-			Animationtree.get("parameters/playback").travel("Idle")
+			#velocity += input_vector * ACCELERATION * dt
+			velocity = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * dt)
+			#print(velocity)
 		else:
-			Animationtree.set("parameters/Idle/blend_position", velocity)
-			Animationtree.set("parameters/Run/blend_position", velocity)
-			Animationtree.get("parameters/playback").travel("Run")
+			animationState.travel("Idle")
+			velocity = velocity.move_toward(Vector2.ZERO, FRICTION * dt)
+			
+
+		move()
+	
+#	if Input.is_action_just_pressed("attack"):
+#		state = ATTACK
+#
+#	if Input.is_action_just_pressed("Roll"):
+#		state = ROLL
+
+
+func move():
+	velocity = move_and_slide(velocity)
 		
 
 func _on_HurtBox_hit(damage):
