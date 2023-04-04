@@ -56,8 +56,8 @@ func _process(delta):
 	
 	if(LevelInfo.enemies_left_in_level == 0):
 		UI.timer.set_paused(true)
-		$StaticBody2D/Door.visible = false
-		$StaticBody2D/CollisionShape2D.disabled = true
+		$Exit/Door.visible = false
+		$Exit/CollisionShape2D.disabled = true
 		# play open door sound
 	
 	

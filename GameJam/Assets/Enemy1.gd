@@ -5,6 +5,7 @@ const DamageItem = preload("res://Assets/DamageItem.tscn")
 
 var items = [HealthItem, DamageItem]
 
+
 onready var stats = $EnemyStats
 var LevelInfo = ResourceLoader.LevelInfo
 
