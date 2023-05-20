@@ -1,42 +1,68 @@
 extends KinematicBody2D
 
 
+var input_vector = Vector2.ZERO
+var velocity = Vector2.ZERO
+
 export var ACCELERATION = 40
-export var MAX_SPEED = 140
-export var ROLL_SPEED = 120
+export var SPEED = 100
 export var FRICTION = 12
 
+export(int) var DAMAGE = 1
 
-var input_vector = Vector2.ZERO
+onready var sprite = $Sprite
+onready var animationPlayer = $AnimationPlayer
 
 var LevelInfo = ResourceLoader.LevelInfo
 var stats = ResourceLoader.PlayerStats
 
+const hitEffect = preload("res://HitEffect.tscn")
 
-onready var animationTree = $AnimationTree
-onready var animationState = animationTree.get("parameters/playback")
 
-enum {
-	MOVE,
-	ROLL,
-	ATTACK,
-}
+var is_attacking setget set_attack
+var dead = false
 
-var state = MOVE
-var velocity = Vector2.ZERO
-var roll_vector = Vector2.DOWN
 
+var play_step_sound = false
+onready var step1 = $Step1
+onready var step2 = $Step2
+onready var step3 = $Step3
+onready var step4 = $Step4
+onready var step5 = $Step5
+onready var steps = [step1,step2,step3,step4,step5]
+
+var play_attack_sound = false
+onready var attack1 = $Attack1
+onready var attack2 = $Attack2
+onready var attack3 = $Attack3
+onready var attacks = [attack1,attack2,attack3]
+
+
+func _play_step_fx():
+	steps.shuffle()
+	var fx_to_play = steps[0]
+	fx_to_play.playing = true
+	
+func _play_attack_fx():
+	attacks.shuffle()
+	var attack_to_play = attacks[0]
+	attack_to_play.playing = true
+	
+func set_attack(value):
+	is_attacking = value
+	
+func _ready():
+	is_attacking = false
+	$PlayerShadow.visible = true
+	$Sprite.visible = true
+	
+	stats.damage = DAMAGE
+	$HitBox.damage = stats.damage
 
 func _physics_process(delta): # physics process if need to touch positon or whatever of the player
 
-	match state:
-		MOVE:
-			moves_state(delta)
-#		ROLL:
-#			roll_state(delta)
-#		ATTACK:
-#			attack_state(delta)
-	
+	moves_state(delta)
+
 
 func moves_state(delta):
 	
@@ -49,36 +75,59 @@ func moves_state(delta):
 		input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
 
 		input_vector = input_vector.normalized()
-
-		if (input_vector != Vector2.ZERO):
-	#		roll_vector = input_vector
-			animationTree.set("parameters/Idle/blend_position", input_vector)
-			animationTree.set("parameters/Run/blend_position", input_vector)
-			animationTree.set("parameters/Attack/blend_position", input_vector)
-			animationTree.set("parameters/Roll/blend_position", input_vector)
-			animationState.travel("Run")
-			
-			#velocity += input_vector * ACCELERATION * dt
-			velocity = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * dt)
-			#print(velocity)
+		
+		if(stats.health != 0):
+			if(is_attacking == false):
+				if(input_vector != Vector2.ZERO):
+					$HitBox/CollisionShape2D.disabled = true
+					if(input_vector.x > 0):
+						sprite.scale.x = 1
+						$HitBox.global_position.x = 10 + global_position.x
+					elif(input_vector.x < 0):
+						sprite.scale.x = -1
+						$HitBox.global_position.x = -8 + global_position.x
+					animationPlayer.play("Run")
+					velocity = velocity.move_toward(input_vector * SPEED, ACCELERATION * dt)
+					
+				else:
+					animationPlayer.play("Idle")
+					velocity = velocity.move_toward(Vector2.ZERO, FRICTION * dt)
+					
+				move()
+			else:
+				animationPlayer.play("Attack")
+				velocity = Vector2.ZERO
 		else:
-			animationState.travel("Idle")
-			velocity = velocity.move_toward(Vector2.ZERO, FRICTION * dt)
-			
+			if(dead == false):
+				animationPlayer.play("Dead")
+			dead = true
 
-		move()
 	
-#	if Input.is_action_just_pressed("attack"):
-#		state = ATTACK
-#
-#	if Input.is_action_just_pressed("Roll"):
-#		state = ROLL
-
+	if Input.is_action_just_pressed("ui_attack"):
+		is_attacking = true
+		
 
 func move():
 	velocity = move_and_slide(velocity)
 		
 
 func _on_HurtBox_hit(damage):
-	pass
-#	print("player _on_HurtBox_hit ")
+	stats.health -= damage
+	var effect = Utils.instanceSceneOnMain(hitEffect, global_position)
+	$GetAttacked.playing = true
+	effect.z_index = 1
+	
+
+func _play_death_sound():
+	$Lose.playing = true
+
+func _game_over():
+	LevelInfo.player_alive = false
+	get_tree().change_scene("res://UI/GameOverScene.tscn")
+
+func _on_Lose_finished():
+	_game_over()
+
+
+
+	

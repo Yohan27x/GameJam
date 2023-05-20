@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Assets/Enemy_tank.png" type="Texture" id=1]
+[ext_resource path="res://EnemyTemplate.tscn" type="PackedScene" id=2]
+[ext_resource path="res://TankEnemy.gd" type="Script" id=3]
+[ext_resource path="res://Enemy_shadow.png" type="Texture" id=4]
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 16, 12 )
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 10, 9 )
+
+[node name="Enemy3" instance=ExtResource( 2 )]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource( 3 )
+
+[node name="EnemyShadow" type="Sprite" parent="." index="0"]
+position = Vector2( 16, -12 )
+texture = ExtResource( 4 )
+
+[node name="Sprite" parent="." index="1"]
+position = Vector2( 16, -12 )
+texture = ExtResource( 1 )
+hframes = 2
+
+[node name="Collider" parent="." index="3"]
+position = Vector2( 10, -12 )
+shape = SubResource( 2 )
+
+[node name="EnemyStats" parent="." index="4"]
+max_health = 5
+
+[node name="HurtBox" parent="." index="5"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape2D" parent="HurtBox" index="0"]
+position = Vector2( 8, -11 )
+shape = SubResource( 1 )
+
+[connection signal="enemy_died" from="EnemyStats" to="." method="_on_EnemyStats_enemy_died"]
+[connection signal="hit" from="HurtBox" to="." method="_on_HurtBox_hit"]
+
+[editable path="HurtBox"]

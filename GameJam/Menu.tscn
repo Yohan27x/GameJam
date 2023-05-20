@@ -1,6 +1,9 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Menu.gd" type="Script" id=1]
+[ext_resource path="res://Sound/SFX Assets/SFX/Mouse over option Robot-game SFX.wav" type="AudioStream" id=2]
+[ext_resource path="res://Sound/SFX Assets/SFX/Selection button Robot-game SFX.wav" type="AudioStream" id=3]
+[ext_resource path="res://title_screen.png" type="Texture" id=4]
 
 [sub_resource type="Theme" id=1]
 
@@ -9,6 +12,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 theme = SubResource( 1 )
 script = ExtResource( 1 )
+
+[node name="TitleScreen" type="Sprite" parent="."]
+position = Vector2( 124, 88 )
+scale = Vector2( 1.03333, 1.03529 )
+texture = ExtResource( 4 )
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 anchor_right = 1.0
@@ -31,5 +39,14 @@ margin_right = 41.0
 margin_bottom = 44.0
 text = "Quit"
 
+[node name="hover" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 2 )
+
+[node name="click" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 3 )
+
+[connection signal="mouse_entered" from="CenterContainer/VBoxContainer/Start" to="." method="_on_Start_mouse_entered"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Start" to="." method="_on_Start_pressed"]
+[connection signal="mouse_entered" from="CenterContainer/VBoxContainer/Quit" to="." method="_on_Quit_mouse_entered"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]
+[connection signal="finished" from="click" to="." method="_on_click_finished"]

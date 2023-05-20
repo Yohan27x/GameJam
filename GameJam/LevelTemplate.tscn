@@ -1,13 +1,17 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://LevelTimeRemainUI.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Level.gd" type="Script" id=2]
 [ext_resource path="res://UI/PlayerUI.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/tile_set.png" type="Texture" id=4]
 [ext_resource path="res://Assets/door.png" type="Texture" id=5]
-[ext_resource path="res://Sound/SFX Assets/Timer2_Middle.wav" type="AudioStream" id=6]
-[ext_resource path="res://Sound/SFX Assets/Timer3_Hard.wav" type="AudioStream" id=7]
-[ext_resource path="res://Sound/SFX Assets/Timer1_Easy1.wav" type="AudioStream" id=8]
+[ext_resource path="res://Sound/SFX Assets/SFX/clear all enemies Robot-game SFX.wav" type="AudioStream" id=6]
+[ext_resource path="res://Sound/SFX Assets/SFX/Next level Robot-game SFX.wav" type="AudioStream" id=7]
+[ext_resource path="res://Sound/SFX Assets/SFX/Timer Easy Robot-game SFX.wav" type="AudioStream" id=8]
+[ext_resource path="res://Sound/SFX Assets/SFX/Timer Middle Robot-game SFX.wav" type="AudioStream" id=9]
+[ext_resource path="res://Sound/SFX Assets/SFX/Timer Hard Robot-game SFX.wav" type="AudioStream" id=10]
+[ext_resource path="res://Sound/SFX Assets/SFX/TimeOut Robot-game SFX.wav" type="AudioStream" id=11]
+[ext_resource path="res://Sound/Music Assets/Music_Levels_16.0.00b_140bpm STEREO.wav" type="AudioStream" id=12]
 
 [sub_resource type="TileSet" id=1]
 0/name = "tile_set.png 0"
@@ -67,6 +71,13 @@ extents = Vector2( 3, 8 )
 [node name="Level" type="StaticBody2D"]
 script = ExtResource( 2 )
 
+[node name="BackGround Color" type="ColorRect" parent="."]
+margin_left = -36.0
+margin_top = -32.0
+margin_right = 284.0
+margin_bottom = 208.0
+color = Color( 0.2, 0.196078, 0.227451, 1 )
+
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource( 1 )
 cell_size = Vector2( 16, 16 )
@@ -77,13 +88,6 @@ tile_data = PoolIntArray( 196614, 0, 0, 196615, 0, 0, 196616, 0, 0, 262149, 0, 0
 tile_set = SubResource( 2 )
 cell_size = Vector2( 16, 16 )
 format = 1
-
-[node name="BackGround Color" type="ColorRect" parent="."]
-margin_left = -32.0
-margin_top = -32.0
-margin_right = 288.0
-margin_bottom = 208.0
-color = Color( 0.568627, 0.431373, 0.431373, 0 )
 
 [node name="Walls" type="CollisionPolygon2D" parent="."]
 
@@ -116,45 +120,43 @@ color = Color( 0, 0, 0, 1 )
 [node name="Fadeduration" type="Timer" parent="."]
 
 [node name="TimeUI" parent="." instance=ExtResource( 1 )]
-margin_left = 218.0
-margin_top = 4.0
-margin_right = 218.0
-margin_bottom = 4.0
+margin_left = 168.0
+margin_top = 22.0
+margin_right = 168.0
+margin_bottom = 22.0
 
 [node name="PlayerUI" parent="." instance=ExtResource( 3 )]
-margin_left = 6.0
-margin_top = 6.0
-margin_right = 6.0
-margin_bottom = 6.0
 
-[node name="GameOver" type="ColorRect" parent="."]
-visible = false
-margin_left = -38.0
-margin_top = -24.0
-margin_right = 278.0
-margin_bottom = 210.0
+[node name="AllDiedSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 6 )
+volume_db = 6.118
 
-[node name="Label" type="Label" parent="GameOver"]
-modulate = Color( 0, 0, 0, 1 )
-margin_left = 114.0
-margin_top = 96.0
-margin_right = 190.0
-margin_bottom = 110.0
-text = "GAME OVER"
+[node name="NextLevelSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 7 )
 
 [node name="TimerEasy" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 8 )
 
 [node name="TimerMiddle" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 6 )
-volume_db = 1.748
+stream = ExtResource( 9 )
 
 [node name="TimerHard" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource( 7 )
-volume_db = 9.614
+stream = ExtResource( 10 )
+
+[node name="TimerOut" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 11 )
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 12 )
+volume_db = -8.739
+autoplay = true
+
+[node name="Camera" type="Camera2D" parent="."]
 
 [connection signal="body_entered" from="Exit/ChangeLevel" to="." method="_on_ChangeLevel_body_entered"]
 [connection signal="timeout" from="Fadeduration" to="." method="_on_TimeRemain_timeout"]
 [connection signal="timeout" from="TimeUI/Timer" to="." method="_on_Timer_timeout"]
+[connection signal="finished" from="AllDiedSFX" to="." method="_on_AllDiedSFX_finished"]
+[connection signal="finished" from="NextLevelSFX" to="." method="_on_NextLevelSFX_finished"]
 
 [editable path="TimeUI"]

@@ -1,8 +1,105 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=17 format=2]
 
-[ext_resource path="res://Assets/enemy1.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Enemy_melee_spritesheet.png" type="Texture" id=1]
 [ext_resource path="res://EnemyTemplate.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Assets/Enemy1.gd" type="Script" id=3]
+[ext_resource path="res://Sound/SFX Assets/SFX/Enemy Melee Attack Robot-game SFX-001.wav" type="AudioStream" id=4]
+[ext_resource path="res://Sound/SFX Assets/SFX/Enemy Melee Attack 1 Robot-game SFX.wav" type="AudioStream" id=5]
+[ext_resource path="res://Sound/SFX Assets/SFX/Enemy Melee Attack Robot-game SFX-002.wav" type="AudioStream" id=6]
+[ext_resource path="res://Enemy_shadow.png" type="Texture" id=7]
+
+[sub_resource type="Animation" id=3]
+resource_name = "Attack"
+length = 0.25
+step = 0.005
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.085, 0.17 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ 2, 3, 4 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.06 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "_play_attack_fx"
+} ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("HitBox/CollisionShape2D:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.085, 0.12 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ false, true ]
+}
+
+[sub_resource type="Animation" id=5]
+resource_name = "Idle"
+length = 0.25
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=6]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "Run"
+length = 0.25
+loop = true
+step = 0.11
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 7, 8 )
@@ -10,29 +107,99 @@ extents = Vector2( 7, 8 )
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 7, 9 )
 
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 8, 5 )
+
+[sub_resource type="CircleShape2D" id=7]
+radius = 54.0
+
+[sub_resource type="CircleShape2D" id=8]
+radius = 22.0
+
 [node name="Enemy1" instance=ExtResource( 2 )]
 script = ExtResource( 3 )
+DAMAGE = 1
+HEALTH = 3
 
-[node name="Sprite" parent="." index="0"]
-position = Vector2( -5.96046e-08, -14 )
-scale = Vector2( 1.75, 1.75 )
+[node name="EnemyShadow" type="Sprite" parent="." index="0"]
+position = Vector2( 10, -11 )
+texture = ExtResource( 7 )
+
+[node name="Sprite" parent="." index="1"]
+position = Vector2( 6, -9 )
 texture = ExtResource( 1 )
+offset = Vector2( 6, 0 )
+hframes = 5
 
-[node name="Collider" parent="." index="2"]
+[node name="AnimationPlayer" parent="." index="2"]
+anims/Attack = SubResource( 3 )
+anims/Idle = SubResource( 5 )
+anims/RESET = SubResource( 6 )
+anims/Run = SubResource( 4 )
+
+[node name="Collider" parent="." index="3"]
+position = Vector2( 6, -8 )
 shape = SubResource( 1 )
 
-[node name="EnemyStats" parent="." index="3"]
-max_health = 1
-
-[node name="HurtBox" parent="." index="4"]
+[node name="HurtBox" parent="." index="5"]
+position = Vector2( 5, 0 )
 collision_layer = 4
 collision_mask = 0
 
 [node name="CollisionShape2D" parent="HurtBox" index="0"]
+visible = false
 position = Vector2( 1, -9 )
 shape = SubResource( 2 )
 
+[node name="HitBox" parent="." index="6"]
+position = Vector2( -10, -12 )
+rotation = -1.57079
+collision_layer = 0
+collision_mask = 2
+damage = 3
+
+[node name="CollisionShape2D" parent="HitBox" index="0"]
+shape = SubResource( 9 )
+
+[node name="CollisionShape2D" parent="PlayerZone" index="0"]
+visible = false
+position = Vector2( 6, -6 )
+shape = SubResource( 7 )
+
+[node name="Wander" type="Timer" parent="." index="8"]
+wait_time = 1.5
+
+[node name="AttackPlayerZone" type="Area2D" parent="." index="9"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackPlayerZone" index="0"]
+visible = false
+position = Vector2( 6, -8 )
+shape = SubResource( 8 )
+disabled = true
+
+[node name="StartAttack" type="Timer" parent="." index="10"]
+wait_time = 0.4
+
+[node name="AttackFx1" type="AudioStreamPlayer2D" parent="." index="11"]
+stream = ExtResource( 5 )
+volume_db = 6.058
+
+[node name="AttackFx2" type="AudioStreamPlayer2D" parent="." index="12"]
+stream = ExtResource( 4 )
+volume_db = 7.068
+
+[node name="AttackFx3" type="AudioStreamPlayer2D" parent="." index="13"]
+position = Vector2( -8, -6 )
+stream = ExtResource( 6 )
+volume_db = 9.087
+
 [connection signal="enemy_died" from="EnemyStats" to="." method="_on_EnemyStats_enemy_died"]
 [connection signal="hit" from="HurtBox" to="." method="_on_HurtBox_hit"]
+[connection signal="body_entered" from="PlayerZone" to="." method="_on_PlayerZone_body_entered"]
+[connection signal="timeout" from="Wander" to="." method="_on_Timer_timeout"]
+[connection signal="body_entered" from="AttackPlayerZone" to="." method="_on_AttackPlayerZone_body_entered"]
+[connection signal="body_exited" from="AttackPlayerZone" to="." method="_on_AttackPlayerZone_body_exited"]
+[connection signal="timeout" from="StartAttack" to="." method="_on_StartAttack_timeout"]
 
 [editable path="HurtBox"]
+[editable path="HitBox"]

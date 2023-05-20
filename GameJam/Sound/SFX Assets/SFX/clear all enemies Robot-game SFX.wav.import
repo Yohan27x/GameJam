@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/clear all enemies Robot-game SFX.wav-0f1340b28e2c7c0d3d7ce06a7af98dad.sample"
+
+[deps]
+
+source_file="res://Sound/SFX Assets/SFX/clear all enemies Robot-game SFX.wav"
+dest_files=[ "res://.import/clear all enemies Robot-game SFX.wav-0f1340b28e2c7c0d3d7ce06a7af98dad.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
